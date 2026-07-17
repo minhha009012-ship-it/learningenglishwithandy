@@ -58,336 +58,338 @@
 </head>
 <body class="h-full flex flex-col justify-between text-slate-700 overflow-x-hidden pb-16 md:pb-0">
 
-    <!-- Top Navigation Header for Mobile / Desktop -->
-    <header class="sticky top-0 z-40 w-full bg-white/80 backdrop-blur-md border-b border-slate-100 py-3 px-4 md:px-8 flex items-center justify-between">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-primary to-secondary flex items-center justify-center text-white font-extrabold text-xl shadow-lg shadow-indigo-100">
-                ⚡
+    <!-- AUTH SCREEN -->
+    <div id="auth-screen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-100/90 backdrop-blur-md">
+        <div class="bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-200/60 shadow-2xl w-full max-w-md space-y-6">
+            <div class="text-center space-y-2">
+                <div class="w-16 h-16 rounded-3xl bg-gradient-to-tr from-primary to-secondary flex items-center justify-center text-white font-extrabold text-3xl shadow-xl shadow-indigo-100 mx-auto animate-bounce">
+                    ⚡
+                </div>
+                <h2 class="text-2xl font-extrabold text-dark tracking-tight">Chào Ní Giao Diện Mới!</h2>
+                <p class="text-xs text-slate-400">Đăng nhập để lưu tiến độ học tập siêu xịn nhé mom!</p>
             </div>
-            <div>
-                <h1 class="text-base md:text-lg font-bold text-dark tracking-tight">Phrasal Verbs 30D</h1>
-                <p class="text-xs text-slate-400">Học cùng ní, lên trình hết nấc! 🚀</p>
+
+            <!-- Tab Selector -->
+            <div class="flex bg-slate-100 p-1 rounded-2xl">
+                <button onclick="toggleAuthTab('login')" id="tab-login-btn" class="flex-1 py-2.5 rounded-xl font-bold text-xs transition bg-white text-dark shadow-sm">Đăng Nhập</button>
+                <button onclick="toggleAuthTab('register')" id="tab-register-btn" class="flex-1 py-2.5 rounded-xl font-bold text-xs transition text-slate-400">Đăng Ký</button>
             </div>
+
+            <!-- Auth Form -->
+            <div class="space-y-4">
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Tên tài khoản (ní name)</label>
+                    <input type="text" id="auth-username" placeholder="Nhập username của ní..." class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary transition">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Mật khẩu bảo mật</label>
+                    <input type="password" id="auth-password" placeholder="Nhập mật khẩu..." class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary transition">
+                </div>
+                <button onclick="submitAuth()" id="auth-submit-btn" class="w-full py-3.5 rounded-2xl bg-primary text-white font-extrabold text-sm shadow-lg shadow-indigo-200 hover:bg-indigo-600 transition duration-200 active:scale-95">
+                    Đăng Nhập Ngay Ní Ơi! 🚀
+                </button>
+            </div>
+            <p class="text-[10px] text-center text-slate-400 leading-relaxed">Dữ liệu được lưu trữ an toàn ngay trên trình duyệt của ní.</p>
         </div>
-        
-        <!-- Total Progress Wheel -->
-        <div class="flex items-center gap-3 bg-indigo-50/50 px-3 py-1.5 rounded-2xl border border-indigo-100/50">
-            <div class="relative w-8 h-8 flex items-center justify-center">
-                <svg class="absolute inset-0 w-full h-full transform -rotate-90">
-                    <circle cx="16" cy="16" r="13" stroke="#e2e8f0" stroke-width="3" fill="transparent" />
-                    <circle id="global-progress-circle" cx="16" cy="16" r="13" stroke="#6366f1" stroke-width="3" fill="transparent" stroke-dasharray="81.68" stroke-dashoffset="81.68" stroke-linecap="round"/>
-                </svg>
-                <span id="global-progress-percent" class="text-[10px] font-bold text-primary">0%</span>
+    </div>
+
+    <!-- APP CONTAINER (HIDDEN UNTIL LOGGED IN) -->
+    <div id="app-container" class="hidden flex-1 flex flex-col justify-between h-full">
+        <!-- Top Navigation Header for Mobile / Desktop -->
+        <header class="sticky top-0 z-40 w-full bg-white/80 backdrop-blur-md border-b border-slate-100 py-3 px-4 md:px-8 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-primary to-secondary flex items-center justify-center text-white font-extrabold text-xl shadow-lg shadow-indigo-100">
+                    ⚡
+                </div>
+                <div>
+                    <h1 class="text-base md:text-lg font-bold text-dark tracking-tight">Phrasal Verbs 30D</h1>
+                    <p class="text-xs text-slate-400">Ní đang học: <span id="current-user-display" class="font-bold text-primary">Ní Ẩn Danh</span> ✨</p>
+                </div>
             </div>
-            <span class="text-xs font-semibold text-primary hidden sm:inline">Tiến độ tổng</span>
-        </div>
-    </header>
-
-    <!-- App Shell (Sidebar + Main Content Area) -->
-    <div class="flex-1 flex overflow-hidden">
-        
-        <!-- Sidebar Navigation (Desktop only) -->
-        <aside class="hidden md:flex flex-col justify-between w-64 bg-white border-r border-slate-100 p-6 flex-shrink-0">
-            <nav class="space-y-2">
-                <button onclick="switchTab('roadmap')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold text-sm transition-all duration-200 bg-primary/10 text-primary" id="nav-roadmap">
-                    <span>📅</span> Lộ Trình 30 Ngày
-                </button>
-                <button onclick="switchTab('flashcards')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold text-sm transition-all duration-200 text-slate-500 hover:bg-slate-50" id="nav-flashcards">
-                    <span>✨</span> Flashcards Xịn Xò
-                </button>
-                <button onclick="switchTab('srs')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold text-sm transition-all duration-200 text-slate-500 hover:bg-slate-50" id="nav-srs">
-                    <span>⏳</span> Ôn Tập Sắp Quên
-                </button>
-                <button onclick="switchTab('games')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold text-sm transition-all duration-200 text-slate-500 hover:bg-slate-50" id="nav-games">
-                    <span>🎮</span> Game So Găng
-                </button>
-                <button onclick="switchTab('dictionary')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold text-sm transition-all duration-200 text-slate-500 hover:bg-slate-50" id="nav-dictionary">
-                    <span>📚</span> Sổ Tay Tra Cứu
-                </button>
-            </nav>
-
-            <div class="p-4 bg-gradient-to-br from-indigo-50 to-pink-50 rounded-2xl border border-indigo-100">
-                <p class="text-xs font-bold text-indigo-900 mb-1">Tip cho ní ngày hôm nay 💡</p>
-                <p class="text-[11px] text-indigo-700/80 leading-relaxed">Học theo cụm từ giúp ní phản xạ nhanh gấp 3 lần so với học từ vựng riêng lẻ đó mom!</p>
-            </div>
-        </aside>
-
-        <!-- Main Content Viewport -->
-        <main class="flex-1 overflow-y-auto bg-slate-50/50 p-4 md:p-8">
             
-            <!-- 1. TAB: ROADMAP -->
-            <section id="tab-roadmap" class="tab-content max-w-6xl mx-auto space-y-6">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                        <h2 class="text-xl md:text-2xl font-extrabold text-dark tracking-tight">🗺️ Lộ Trình 30 Ngày Bứt Phá</h2>
-                        <p class="text-xs md:text-sm text-slate-400">Chọn 1 ngày để vào chiến luôn nào ní ơi!</p>
+            <!-- Total Progress Wheel & Logout button -->
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-3 bg-indigo-50/50 px-3 py-1.5 rounded-2xl border border-indigo-100/50">
+                    <div class="relative w-8 h-8 flex items-center justify-center">
+                        <svg class="absolute inset-0 w-full h-full transform -rotate-90">
+                            <circle cx="16" cy="16" r="13" stroke="#e2e8f0" stroke-width="3" fill="transparent" />
+                            <circle id="global-progress-circle" cx="16" cy="16" r="13" stroke="#6366f1" stroke-width="3" fill="transparent" stroke-dasharray="81.68" stroke-dashoffset="81.68" stroke-linecap="round"/>
+                        </svg>
+                        <span id="global-progress-percent" class="text-[10px] font-bold text-primary">0%</span>
                     </div>
+                    <span class="text-xs font-semibold text-primary hidden sm:inline">Tiến độ</span>
                 </div>
+                <button onclick="logoutUser()" class="p-2 rounded-2xl bg-slate-100 text-slate-500 hover:bg-red-50 hover:text-red-600 transition text-sm font-bold flex items-center gap-1.5">
+                    <span>🚪</span> <span class="hidden md:inline">Đăng xuất</span>
+                </button>
+            </div>
+        </header>
 
-                <!-- NEW OPTIMIZED DAY GRID -->
-                <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-10 gap-3 md:gap-4 p-4 md:p-6 bg-white rounded-3xl border border-slate-100 shadow-sm" id="roadmap-grid">
-                    <!-- Day Buttons are dynamically rendered here with Circular Progress Rings -->
+        <!-- Main Workspace Shell -->
+        <div class="flex-1 flex overflow-hidden">
+            
+            <!-- Sidebar Navigation (Desktop only) -->
+            <aside class="hidden md:flex flex-col justify-between w-64 bg-white border-r border-slate-100 p-6 flex-shrink-0">
+                <nav class="space-y-2">
+                    <button onclick="switchTab('roadmap')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold text-sm transition-all duration-200 bg-primary/10 text-primary" id="nav-roadmap">
+                        <span>📅</span> Lộ Trình 30 Ngày
+                    </button>
+                    <button onclick="switchTab('flashcards')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold text-sm transition-all duration-200 text-slate-500 hover:bg-slate-50" id="nav-flashcards">
+                        <span>✨</span> Flashcards Xịn Xò
+                    </button>
+                    <button onclick="switchTab('srs')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold text-sm transition-all duration-200 text-slate-500 hover:bg-slate-50" id="nav-srs">
+                        <span>⏳</span> Ôn Tập Sắp Quên
+                    </button>
+                    <button onclick="switchTab('games')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold text-sm transition-all duration-200 text-slate-500 hover:bg-slate-50" id="nav-games">
+                        <span>🎮</span> Game So Găng
+                    </button>
+                    <button onclick="switchTab('dictionary')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold text-sm transition-all duration-200 text-slate-500 hover:bg-slate-50" id="nav-dictionary">
+                        <span>📚</span> Sổ Tay Tra Cứu
+                    </button>
+                </nav>
+
+                <div class="p-4 bg-gradient-to-br from-indigo-50 to-pink-50 rounded-2xl border border-indigo-100">
+                    <p class="text-xs font-bold text-indigo-900 mb-1">Tip cho ní ngày hôm nay 💡</p>
+                    <p class="text-[11px] text-indigo-700/80 leading-relaxed">Học theo cụm từ giúp ní phản xạ nhanh gấp 3 lần so với học từ vựng riêng lẻ đó mom!</p>
                 </div>
-            </section>
+            </aside>
 
-            <!-- 2. TAB: FLASHCARDS -->
-            <section id="tab-flashcards" class="tab-content max-w-3xl mx-auto space-y-6 hidden">
-                <div class="text-center">
-                    <h2 class="text-xl md:text-2xl font-extrabold text-dark" id="flashcard-title">✨ Học Cụm Từ Ngày 1</h2>
-                    <p class="text-xs text-slate-400 mt-1">Chạm vào thẻ để lật ngược xem nghĩa và ví dụ</p>
-                </div>
-
-                <!-- Main Card Space with Images -->
-                <div class="flex flex-col items-center justify-center min-h-[450px]">
-                    <div id="flashcard-container" class="perspective-1000 w-full max-w-sm aspect-[3/4.2] cursor-pointer relative transform-style-3d transition-transform duration-500">
-                        
-                        <!-- CARD FRONT -->
-                        <div class="absolute inset-0 w-full h-full backface-hidden bg-white rounded-3xl shadow-xl shadow-slate-100 border border-slate-100 overflow-hidden flex flex-col justify-between">
-                            <!-- Topic Illustration Image -->
-                            <div class="w-full h-44 overflow-hidden relative bg-slate-100">
-                                <img id="card-front-img" src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=500" alt="Illustration" class="w-full h-full object-cover">
-                                <div class="absolute top-3 left-3 bg-indigo-600 text-white text-[10px] font-extrabold uppercase px-2 py-1 rounded-full shadow-md tracking-wider" id="card-category">
-                                    PHRASAL VERB
-                                </div>
-                            </div>
-                            
-                            <div class="flex-1 flex flex-col items-center justify-center px-6 py-4 text-center">
-                                <div class="flex items-center gap-2 justify-center mb-2">
-                                    <h3 id="card-phrase" class="text-2xl md:text-3xl font-extrabold text-dark tracking-tight leading-tight">account for</h3>
-                                    <button onclick="speakCurrentWord(event)" class="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 hover:bg-indigo-100 active:scale-95 transition flex items-center justify-center text-sm" title="Nghe phát âm">
-                                        🔊
-                                    </button>
-                                </div>
-                                <p class="text-xs text-slate-400 mt-1 uppercase tracking-wider font-semibold">Touch to Flip 🔄</p>
-                            </div>
-
-                            <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
-                                <span id="card-index">Thẻ 1/5</span>
-                                <span>Cố lên ní ơi!</span>
-                            </div>
+            <!-- Main Content Viewport -->
+            <main class="flex-1 overflow-y-auto bg-slate-50/50 p-4 md:p-8">
+                
+                <!-- 1. TAB: ROADMAP -->
+                <section id="tab-roadmap" class="tab-content max-w-6xl mx-auto space-y-6">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div>
+                            <h2 class="text-xl md:text-2xl font-extrabold text-dark tracking-tight">🗺️ Lộ Trình 30 Ngày Bứt Phá</h2>
+                            <p class="text-xs md:text-sm text-slate-400">Chọn 1 ngày để vào chiến luôn nào ní ơi!</p>
                         </div>
+                    </div>
 
-                        <!-- CARD BACK -->
-                        <div class="absolute inset-0 w-full h-full backface-hidden rotate-y-180 bg-gradient-to-tr from-indigo-50/50 via-white to-pink-50/50 rounded-3xl shadow-xl shadow-slate-100 border border-indigo-100 overflow-hidden flex flex-col justify-between p-6">
-                            <div class="space-y-4">
-                                <div class="pb-3 border-b border-slate-100">
-                                    <span class="text-[10px] font-bold text-pink-500 uppercase tracking-widest">Nghĩa là gì ní?</span>
-                                    <h4 id="card-meaning" class="text-xl font-bold text-dark mt-1">chiếm (%), giải thích</h4>
+                    <!-- NEW OPTIMIZED DAY GRID -->
+                    <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-10 gap-3 md:gap-4 p-4 md:p-6 bg-white rounded-3xl border border-slate-100 shadow-sm" id="roadmap-grid">
+                        <!-- Day Buttons are dynamically rendered here with Circular Progress Rings -->
+                    </div>
+                </section>
+
+                <!-- 2. TAB: FLASHCARDS -->
+                <section id="tab-flashcards" class="tab-content max-w-3xl mx-auto space-y-6 hidden">
+                    <div class="text-center">
+                        <h2 class="text-xl md:text-2xl font-extrabold text-dark" id="flashcard-title">✨ Học Cụm Từ Ngày 1</h2>
+                        <p class="text-xs text-slate-400 mt-1">Chạm vào thẻ để lật ngược xem nghĩa và ví dụ</p>
+                    </div>
+
+                    <!-- Main Card Space with Images -->
+                    <div class="flex flex-col items-center justify-center min-h-[450px]">
+                        <div id="flashcard-container" class="perspective-1000 w-full max-w-sm aspect-[3/4.2] cursor-pointer relative transform-style-3d transition-transform duration-500">
+                            
+                            <!-- CARD FRONT -->
+                            <div class="absolute inset-0 w-full h-full backface-hidden bg-white rounded-3xl shadow-xl shadow-slate-100 border border-slate-100 overflow-hidden flex flex-col justify-between">
+                                <div class="w-full h-44 overflow-hidden relative bg-slate-100">
+                                    <img id="card-front-img" src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=500" alt="Illustration" class="w-full h-full object-cover">
+                                    <div class="absolute top-3 left-3 bg-indigo-600 text-white text-[10px] font-extrabold uppercase px-2 py-1 rounded-full shadow-md tracking-wider" id="card-category">
+                                        PHRASAL VERB
+                                    </div>
+                                </div>
+                                
+                                <div class="flex-1 flex flex-col items-center justify-center px-6 py-4 text-center">
+                                    <div class="flex items-center gap-2 justify-center mb-2">
+                                        <h3 id="card-phrase" class="text-2xl md:text-3xl font-extrabold text-dark tracking-tight leading-tight">account for</h3>
+                                        <button onclick="speakCurrentWord(event)" class="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 hover:bg-indigo-100 active:scale-95 transition flex items-center justify-center text-sm" title="Nghe phát âm">
+                                            🔊
+                                        </button>
+                                    </div>
+                                    <p class="text-xs text-slate-400 mt-1 uppercase tracking-wider font-semibold">Touch to Flip 🔄</p>
                                 </div>
 
-                                <div class="space-y-2">
-                                    <span class="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">Ví dụ thực tế</span>
-                                    <div class="p-4 bg-white/70 backdrop-blur-sm rounded-2xl border border-indigo-100/40">
-                                        <p id="card-example" class="text-sm font-semibold text-slate-700 italic">"High temperatures account for the poor harvest."</p>
-                                        <p id="card-translation" class="text-xs text-slate-500 mt-2">👉 Nhiệt độ cao giải thích cho việc mất mùa.</p>
+                                <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
+                                    <span id="card-index">Thẻ 1/5</span>
+                                    <span>Cố lên ní ơi!</span>
+                                </div>
+                            </div>
+
+                            <!-- CARD BACK -->
+                            <div class="absolute inset-0 w-full h-full backface-hidden rotate-y-180 bg-gradient-to-tr from-indigo-50/50 via-white to-pink-50/50 rounded-3xl shadow-xl shadow-slate-100 border border-indigo-100 overflow-hidden flex flex-col justify-between p-6">
+                                <div class="space-y-4">
+                                    <div class="pb-3 border-b border-slate-100">
+                                        <span class="text-[10px] font-bold text-pink-500 uppercase tracking-widest">Nghĩa là gì ní?</span>
+                                        <h4 id="card-meaning" class="text-xl font-bold text-dark mt-1">chiếm (%), giải thích</h4>
+                                    </div>
+
+                                    <div class="space-y-2">
+                                        <span class="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">Ví dụ thực tế</span>
+                                        <div class="p-4 bg-white/70 backdrop-blur-sm rounded-2xl border border-indigo-100/40">
+                                            <p id="card-example" class="text-sm font-semibold text-slate-700 italic">"High temperatures account for the poor harvest."</p>
+                                            <p id="card-translation" class="text-xs text-slate-500 mt-2">👉 Nhiệt độ cao giải thích cho việc mất mùa.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-3">
+                                    <p class="text-center text-[11px] font-bold text-indigo-500">Ní thấy từ này thế nào?</p>
+                                    <div class="grid grid-cols-4 gap-1.5" onclick="event.stopPropagation();">
+                                        <button onclick="rateSRS(1)" class="py-2 px-1 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 active:scale-95 transition text-[10px] font-bold text-center">Quên 😭</button>
+                                        <button onclick="rateSRS(2)" class="py-2 px-1 rounded-xl bg-amber-50 text-amber-600 hover:bg-amber-100 active:scale-95 transition text-[10px] font-bold text-center">Khó 😵‍¢</button>
+                                        <button onclick="rateSRS(3)" class="py-2 px-1 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-100 active:scale-95 transition text-[10px] font-bold text-center">Nhớ 🙂</button>
+                                        <button onclick="rateSRS(4)" class="py-2 px-1 rounded-xl bg-emerald-50 text-emerald-600 hover:bg-emerald-100 active:scale-95 transition text-[10px] font-bold text-center">Dễ cực 😎</button>
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Interactive Quick Evaluation (SRS Rate) -->
-                            <div class="space-y-3">
-                                <p class="text-center text-[11px] font-bold text-indigo-500">Ní thấy từ này thế nào?</p>
-                                <div class="grid grid-cols-4 gap-1.5" onclick="event.stopPropagation();">
-                                    <button onclick="rateSRS(1)" class="py-2 px-1 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 active:scale-95 transition text-[10px] font-bold text-center">Quên 😭</button>
-                                    <button onclick="rateSRS(2)" class="py-2 px-1 rounded-xl bg-amber-50 text-amber-600 hover:bg-amber-100 active:scale-95 transition text-[10px] font-bold text-center">Khó 😵‍💫</button>
-                                    <button onclick="rateSRS(3)" class="py-2 px-1 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-100 active:scale-95 transition text-[10px] font-bold text-center">Nhớ 🙂</button>
-                                    <button onclick="rateSRS(4)" class="py-2 px-1 rounded-xl bg-emerald-50 text-emerald-600 hover:bg-emerald-100 active:scale-95 transition text-[10px] font-bold text-center">Dễ cực 😎</button>
-                                </div>
-                            </div>
                         </div>
-
                     </div>
-                </div>
 
-                <!-- Flashcard Deck Controls -->
-                <div class="flex items-center justify-between max-w-sm mx-auto">
-                    <button onclick="prevCard()" class="w-12 h-12 rounded-2xl bg-white border border-slate-100 flex items-center justify-center text-lg hover:bg-slate-50 active:scale-95 transition shadow-sm">
-                        ⬅️
-                    </button>
-                    <button onclick="markDayCompleted()" class="px-6 py-3 rounded-2xl bg-emerald-500 text-white font-extrabold text-sm shadow-lg shadow-emerald-100 hover:bg-emerald-600 hover:shadow-none transition active:scale-95">
-                        Xong ngày này ní ơi! 🎉
-                    </button>
-                    <button onclick="nextCard()" class="w-12 h-12 rounded-2xl bg-white border border-slate-100 flex items-center justify-center text-lg hover:bg-slate-50 active:scale-95 transition shadow-sm">
-                        ➡️
-                    </button>
-                </div>
-            </section>
-
-            <!-- 3. TAB: SRS PRACTICE -->
-            <section id="tab-srs" class="tab-content max-w-3xl mx-auto space-y-6 hidden">
-                <div class="text-center">
-                    <h2 class="text-xl md:text-2xl font-extrabold text-dark">⏳ Ôn Tập Spaced Repetition</h2>
-                    <p class="text-xs text-slate-400 mt-1">Thuật toán SM2 tự động nhắc từ sắp quên đúng thời điểm</p>
-                </div>
-
-                <div id="srs-card-box" class="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm text-center space-y-6">
-                    <!-- Dynamic SRS content goes here -->
-                </div>
-            </section>
-
-            <!-- 4. TAB: GAMES -->
-            <section id="tab-games" class="tab-content max-w-3xl mx-auto space-y-6 hidden">
-                <div class="text-center">
-                    <h2 class="text-xl md:text-2xl font-extrabold text-dark">🎮 Trò Chơi Ôn Tập Phản Xạ</h2>
-                    <p class="text-xs text-slate-400 mt-1">Học mà chơi, chơi mà học cho mau thuộc ní ơi!</p>
-                </div>
-
-                <!-- Game Selector -->
-                <div class="grid grid-cols-2 gap-4">
-                    <button onclick="startQuizGame()" class="p-6 rounded-3xl bg-gradient-to-br from-indigo-50 to-indigo-100/50 border border-indigo-100 text-left hover:scale-[1.02] transition duration-200">
-                        <span class="text-3xl">🧩</span>
-                        <h3 class="font-extrabold text-dark mt-3">Trắc Nghiệm Phản Xạ</h3>
-                        <p class="text-xs text-slate-500 mt-1">Chọn nghĩa đúng nhất cho cụm từ hiển thị.</p>
-                    </button>
-                    <button onclick="startScrambleGame()" class="p-6 rounded-3xl bg-gradient-to-br from-pink-50 to-pink-100/50 border border-pink-100 text-left hover:scale-[1.02] transition duration-200">
-                        <span class="text-3xl">🔠</span>
-                        <h3 class="font-extrabold text-dark mt-3">Sắp Xếp Cụm Từ</h3>
-                        <p class="text-xs text-slate-500 mt-1">Xếp các từ xáo trộn thành phrasal verb đúng.</p>
-                    </button>
-                </div>
-
-                <!-- Active Game Arena -->
-                <div id="game-arena" class="bg-white p-6 md:p-8 rounded-3xl border border-slate-100 shadow-sm hidden">
-                    <!-- Content will be injected dynamically -->
-                </div>
-            </section>
-
-            <!-- 5. TAB: DICTIONARY -->
-            <section id="tab-dictionary" class="tab-content max-w-6xl mx-auto space-y-6 hidden">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                        <h2 class="text-xl md:text-2xl font-extrabold text-dark">📚 Sổ Tay Tra Cứu Toàn Bộ Cụm Từ</h2>
-                        <p class="text-xs text-slate-400">Tổng hợp 116 cụm từ động từ Langmaster thần thánh</p>
+                    <!-- Flashcard Deck Controls -->
+                    <div class="flex items-center justify-between max-w-sm mx-auto w-full">
+                        <button onclick="prevCard()" class="w-12 h-12 rounded-2xl bg-white border border-slate-100 flex items-center justify-center text-lg hover:bg-slate-50 active:scale-95 transition shadow-sm">
+                            ⬅️
+                        </button>
+                        <button onclick="markDayCompleted()" class="px-6 py-3 rounded-2xl bg-emerald-500 text-white font-extrabold text-sm shadow-lg shadow-emerald-100 hover:bg-emerald-600 hover:shadow-none transition active:scale-95">
+                            Xong ngày này ní ơi! 🎉
+                        </button>
+                        <button onclick="nextCard()" class="w-12 h-12 rounded-2xl bg-white border border-slate-100 flex items-center justify-center text-lg hover:bg-slate-50 active:scale-95 transition shadow-sm">
+                            ➡️
+                        </button>
                     </div>
-                    
-                    <!-- Search Input -->
-                    <div class="relative w-full md:w-72">
-                        <input type="text" id="dic-search" oninput="filterDictionary()" placeholder="Tìm cụm từ hoặc nghĩa..." class="w-full px-4 py-2.5 pl-10 rounded-2xl bg-white border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition">
-                        <span class="absolute left-3.5 top-3 text-slate-400 text-sm">🔍</span>
+                </section>
+
+                <!-- 3. TAB: SRS PRACTICE -->
+                <section id="tab-srs" class="tab-content max-w-3xl mx-auto space-y-6 hidden">
+                    <div class="text-center">
+                        <h2 class="text-xl md:text-2xl font-extrabold text-dark">⏳ Ôn Tập Spaced Repetition</h2>
+                        <p class="text-xs text-slate-400 mt-1">Thuật toán SM2 tự động nhắc từ sắp quên đúng thời điểm</p>
                     </div>
-                </div>
 
-                <!-- Optimized Interactive Dictionary Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="dictionary-list">
-                    <!-- Dictionary Card items rendered here -->
-                </div>
-            </section>
+                    <div id="srs-card-box" class="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm text-center space-y-6">
+                        <!-- Dynamic SRS content goes here -->
+                    </div>
+                </section>
 
-        </main>
+                <!-- 4. TAB: GAMES -->
+                <section id="tab-games" class="tab-content max-w-3xl mx-auto space-y-6 hidden">
+                    <div class="text-center">
+                        <h2 class="text-xl md:text-2xl font-extrabold text-dark">🎮 Trò Chơi Ôn Tập Phản Xạ</h2>
+                        <p class="text-xs text-slate-400 mt-1">Học mà chơi, chơi mà học cho mau thuộc ní ơi!</p>
+                    </div>
+
+                    <!-- Game Selector -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <button onclick="startQuizGame()" class="p-6 rounded-3xl bg-gradient-to-br from-indigo-50 to-indigo-100/50 border border-indigo-100 text-left hover:scale-[1.02] transition duration-200">
+                            <span class="text-3xl">🧩</span>
+                            <h3 class="font-extrabold text-dark mt-3">Trắc Nghiệm Phản Xạ</h3>
+                            <p class="text-xs text-slate-500 mt-1">Chọn nghĩa đúng nhất cho cụm từ hiển thị.</p>
+                        </button>
+                        <button onclick="startScrambleGame()" class="p-6 rounded-3xl bg-gradient-to-br from-pink-50 to-pink-100/50 border border-pink-100 text-left hover:scale-[1.02] transition duration-200">
+                            <span class="text-3xl">🔠</span>
+                            <h3 class="font-extrabold text-dark mt-3">Sắp Xếp Cụm Từ</h3>
+                            <p class="text-xs text-slate-500 mt-1">Xếp các từ xáo trộn thành phrasal verb đúng.</p>
+                        </button>
+                    </div>
+
+                    <!-- Active Game Arena -->
+                    <div id="game-arena" class="bg-white p-6 md:p-8 rounded-3xl border border-slate-100 shadow-sm hidden">
+                        <!-- Content will be injected dynamically -->
+                    </div>
+                </section>
+
+                <!-- 5. TAB: DICTIONARY -->
+                <section id="tab-dictionary" class="tab-content max-w-6xl mx-auto space-y-6 hidden">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div>
+                            <h2 class="text-xl md:text-2xl font-extrabold text-dark">📚 Sổ Tay Tra Cứu Toàn Bộ Cụm Từ</h2>
+                            <p class="text-xs text-slate-400">Tổng hợp 116 cụm từ động từ Langmaster thần thánh</p>
+                        </div>
+                        
+                        <!-- Search Input -->
+                        <div class="relative w-full md:w-72">
+                            <input type="text" id="dic-search" oninput="filterDictionary()" placeholder="Tìm cụm từ hoặc nghĩa..." class="w-full px-4 py-2.5 pl-10 rounded-2xl bg-white border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition">
+                            <span class="absolute left-3.5 top-3 text-slate-400 text-sm">🔍</span>
+                        </div>
+                    </div>
+
+                    <!-- Dictionary Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="dictionary-list">
+                        <!-- Dictionary Card items rendered here -->
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <!-- Bottom Navigation Bar for Mobile -->
+        <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 py-2 px-3 flex justify-around items-center z-50 shadow-2xl">
+            <button onclick="switchTab('roadmap')" class="mob-nav-btn flex flex-col items-center gap-1 text-primary" id="mob-nav-roadmap">
+                <span class="text-xl">📅</span>
+                <span class="text-[9px] font-bold">Lộ Trình</span>
+            </button>
+            <button onclick="switchTab('flashcards')" class="mob-nav-btn flex flex-col items-center gap-1 text-slate-400" id="mob-nav-flashcards">
+                <span class="text-xl">✨</span>
+                <span class="text-[9px] font-bold">Thẻ Học</span>
+            </button>
+            <button onclick="switchTab('srs')" class="mob-nav-btn flex flex-col items-center gap-1 text-slate-400" id="mob-nav-srs">
+                <span class="text-xl">⏳</span>
+                <span class="text-[9px] font-bold">Ôn Tập</span>
+            </button>
+            <button onclick="switchTab('games')" class="mob-nav-btn flex flex-col items-center gap-1 text-slate-400" id="mob-nav-games">
+                <span class="text-xl">🎮</span>
+                <span class="text-[9px] font-bold">Trò Chơi</span>
+            </button>
+            <button onclick="switchTab('dictionary')" class="mob-nav-btn flex flex-col items-center gap-1 text-slate-400" id="mob-nav-dictionary">
+                <span class="text-xl">📚</span>
+                <span class="text-[9px] font-bold">Sổ Tay</span>
+            </button>
+        </nav>
     </div>
-
-    <!-- Bottom Navigation Bar for Mobile -->
-    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 py-2 px-3 flex justify-around items-center z-50 shadow-2xl">
-        <button onclick="switchTab('roadmap')" class="mob-nav-btn flex flex-col items-center gap-1 text-primary" id="mob-nav-roadmap">
-            <span class="text-xl">📅</span>
-            <span class="text-[9px] font-bold">Lộ Trình</span>
-        </button>
-        <button onclick="switchTab('flashcards')" class="mob-nav-btn flex flex-col items-center gap-1 text-slate-400" id="mob-nav-flashcards">
-            <span class="text-xl">✨</span>
-            <span class="text-[9px] font-bold">Thẻ Học</span>
-        </button>
-        <button onclick="switchTab('srs')" class="mob-nav-btn flex flex-col items-center gap-1 text-slate-400" id="mob-nav-srs">
-            <span class="text-xl">⏳</span>
-            <span class="text-[9px] font-bold">Ôn Tập</span>
-        </button>
-        <button onclick="switchTab('games')" class="mob-nav-btn flex flex-col items-center gap-1 text-slate-400" id="mob-nav-games">
-            <span class="text-xl">🎮</span>
-            <span class="text-[9px] font-bold">Trò Chơi</span>
-        </button>
-        <button onclick="switchTab('dictionary')" class="mob-nav-btn flex flex-col items-center gap-1 text-slate-400" id="mob-nav-dictionary">
-            <span class="text-xl">📚</span>
-            <span class="text-[9px] font-bold">Sổ Tay</span>
-        </button>
-    </nav>
 
     <!-- Global Toast notification container -->
     <div id="toast-container" class="fixed bottom-20 md:bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
     <script>
-        // Core dataset loaded directly based on user's curated 116 list.
-        // Mapped with beautiful Unsplash dynamic images based on action verbs
+        // Core dataset mapped with Unsplash visual anchors
         const phrasalVerbsData = [
-            // Day 1: Group A
+            // Day 1
             { id: 1, day: 1, phrase: "account for", meaning: "chiếm (%), giải thích", example: "High temperatures account for the poor harvest.", translation: "Nhiệt độ cao giải thích cho việc mất mùa.", image: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=500" },
             { id: 2, day: 1, phrase: "advance in", meaning: "lấn tới, tiến bộ", example: "He wants to advance in his career.", translation: "Anh ấy muốn tiến xa trong sự nghiệp.", image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=500" },
-            { id: 3, day: 1, phrase: "advance on", meaning: "trình bày", example: "She advanced on her research findings to the board.", translation: "Cô ấy trình bày các kết quả nghiên cứu của mình trước hội đồng.", image: "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=500" },
+            { id: 3, day: 1, phrase: "advance on", meaning: "trình bày", example: "She advanced on her research findings.", translation: "Cô ấy trình bày các kết quả nghiên cứu.", image: "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=500" },
             { id: 4, day: 1, phrase: "advance to", meaning: "tiến tới", example: "The team advanced to the finals.", translation: "Đội bóng đã tiến thẳng vào trận chung kết.", image: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=500" },
             
-            // Day 2: Group A
+            // Day 2
             { id: 5, day: 2, phrase: "agree on", meaning: "tán thành về việc gì", example: "They finally agreed on a new design proposal.", translation: "Họ cuối cùng đã đồng thuận về đề án thiết kế mới.", image: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=500" },
             { id: 6, day: 2, phrase: "agree with", meaning: "đồng ý với ai đó", example: "I agree with your suggestion.", translation: "Tôi đồng ý với đề xuất của bạn.", image: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=500" },
             { id: 7, day: 2, phrase: "allow for", meaning: "xem xét đến, tính đến", example: "We must allow for some delays due to traffic.", translation: "Chúng ta phải tính đến sự chậm trễ do giao thông.", image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=500" },
             { id: 8, day: 2, phrase: "answer for", meaning: "chịu trách nhiệm về", example: "You will have to answer for your actions.", translation: "Ní sẽ phải tự chịu trách nhiệm về hành động của mình đó.", image: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=500" },
             
-            // Day 3: Group A & B
+            // Day 3
             { id: 9, day: 3, phrase: "answer to", meaning: "phù hợp với", example: "This description answers to the missing cat.", translation: "Mô tả này phù hợp với chú mèo đang bị lạc mất.", image: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=500" },
             { id: 10, day: 3, phrase: "ask after", meaning: "hỏi thăm sức khỏe", example: "She always asks after my mother.", translation: "Cô ấy lúc nào cũng hỏi thăm sức khỏe mẹ tôi.", image: "https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=500" },
             { id: 11, day: 3, phrase: "ask for", meaning: "hỏi xin cái gì", example: "They decided to ask for more time.", translation: "Họ quyết định xin thêm thời gian.", image: "https://images.unsplash.com/photo-1484980972926-edee96e0960d?w=500" },
             { id: 12, day: 3, phrase: "attend on", meaning: "hầu hạ, phục vụ", example: "The servants attend on the royal family.", translation: "Người hầu phục vụ cho hoàng gia.", image: "https://images.unsplash.com/photo-1581579186955-2634d3d19119?w=500" },
 
-            // Day 4: Group B
+            // Day 4
             { id: 13, day: 4, phrase: "attend to", meaning: "để ý tới, chú ý", example: "I must attend to this matter immediately.", translation: "Tôi phải tập trung giải quyết việc này ngay lập tức.", image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=500" },
             { id: 14, day: 4, phrase: "back up", meaning: "nâng đỡ, ủng hộ, sao lưu", example: "My wife backed me up in my decision.", translation: "Vợ tớ luôn ủng hộ quyết định của tớ.", image: "https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=500" },
             { id: 15, day: 4, phrase: "bear on", meaning: "có ảnh hưởng tới", example: "These facts bear on the case directly.", translation: "Những sự thật này ảnh hưởng trực tiếp đến vụ án.", image: "https://images.unsplash.com/photo-1450133064473-71024230f91b?w=500" },
-            { id: 16, day: 4, phrase: "beaver away", meaning: "làm việc cực kỳ chăm chỉ", example: "She's been beavering away at her desk all morning.", translation: "Mom ấy đã làm việc cắm đầu cắm cổ suốt cả buổi sáng.", image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=500" },
-
-            // Day 5: Group B
-            { id: 17, day: 5, phrase: "become of", meaning: "xảy ra cho", example: "What became of that old friend of yours?", translation: "Có chuyện gì đã xảy ra với người bạn cũ của cậu vậy?", image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=500" },
-            { id: 18, day: 5, phrase: "begin at", meaning: "khởi đầu tại", example: "The concert will begin at 7 PM.", translation: "Buổi hòa nhạc sẽ bắt đầu vào lúc 7 giờ tối.", image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500" },
-            { id: 19, day: 5, phrase: "begin with", meaning: "khởi đầu bằng", example: "Let's begin with a short introduction.", translation: "Chúng ta bắt đầu bằng màn giới thiệu ngắn nhé.", image: "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=500" },
-            { id: 20, day: 5, phrase: "believe in", meaning: "tin tưởng vào", example: "You must believe in yourself, mom!", translation: "Ní phải tin tưởng vào chính bản thân mình đó mom!", image: "https://images.unsplash.com/photo-1490730141103-6cac27aaab94?w=500" },
-
-            // Day 6: Group B
-            { id: 21, day: 6, phrase: "belong to", meaning: "thuộc về", example: "This book belongs to my wife.", translation: "Quyển sách này thuộc sở hữu của vợ tớ.", image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=500" },
-            { id: 22, day: 6, phrase: "bet on", meaning: "đánh cược vào", example: "Don't bet on his success.", translation: "Đừng dại gì mà cá cược vào sự thành công của anh ta.", image: "https://images.unsplash.com/photo-1596838132731-3301c3fd4317?w=500" },
-            { id: 23, day: 6, phrase: "boil over", meaning: "sôi tràn nước, mất kiểm soát", example: "The milk boiled over and made a mess.", translation: "Sữa sôi tràn ra ngoài làm bẩn hết cả bếp.", image: "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=500" },
-            { id: 24, day: 6, phrase: "break away", meaning: "chạy trốn, thoát khỏi", example: "The horse broke away from the stable.", translation: "Con ngựa đã giật đứt dây và trốn khỏi chuồng.", image: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=500" },
-
-            // Day 7: Group B & C
-            { id: 25, day: 7, phrase: "break down", meaning: "hỏng hóc, suy sụp", example: "My car broke down on the way home.", translation: "Xe của tớ tự dưng lăn ra hỏng trên đường về nhà.", image: "https://images.unsplash.com/photo-1486006920555-c77dce18193b?w=500" },
-            { id: 26, day: 7, phrase: "break in", meaning: "đột nhập, ngắt lời", example: "Thieves broke in while they were sleeping.", translation: "Trộm đã lẻn đột nhập vào nhà khi họ đang ngủ say.", image: "https://images.unsplash.com/photo-1508847154043-be12a3b4d69e?w=500" },
-            { id: 27, day: 7, phrase: "break off", meaning: "tan vỡ, chấm dứt đột ngột", example: "They broke off their engagement.", translation: "Họ bất ngờ hủy bỏ hôn ước.", image: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=500" },
-            { id: 28, day: 7, phrase: "break out", meaning: "bùng nổ, bộc phát", example: "A fire broke out in the building.", translation: "Một vụ hỏa hoạn đã bùng phát trong tòa nhà.", image: "https://images.unsplash.com/photo-1516496636080-1448e0414c2b?w=500" },
-
-            // Day 8: Group B & C
-            { id: 29, day: 8, phrase: "break through", meaning: "vượt qua rào cản, phá thủng", example: "Scientists have broken through in cancer research.", translation: "Các nhà khoa học đã đạt bước đột phá trong nghiên cứu ung thư.", image: "https://images.unsplash.com/photo-1532187643603-ba119ca4109e?w=500" },
-            { id: 30, day: 8, phrase: "break up with", meaning: "chia tay với người yêu", example: "He broke up with his girlfriend last week.", translation: "Tuần trước thanh niên ấy vừa chia tay bạn gái rồi ní ơi.", image: "https://images.unsplash.com/photo-1509248961158-e54f6934749c?w=500" },
-            { id: 31, day: 8, phrase: "bring about", meaning: "mang lại, gây ra", example: "The new technology brought about many changes.", translation: "Công nghệ mới đã đem lại rất nhiều thay đổi.", image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=500" },
-            { id: 32, day: 8, phrase: "bring down", meaning: "hạ bệ ai đó, làm ai buồn", example: "The scandal brought down the government.", translation: "Vụ bê bối đã làm sụp đổ cả một chính phủ.", image: "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=500" },
-
-            // Day 9: Group C
-            { id: 33, day: 9, phrase: "call at", meaning: "ghé thăm địa điểm", example: "The ship will call at several ports.", translation: "Con tàu sẽ ghé lại vài cảng biển.", image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=500" },
-            { id: 34, day: 9, phrase: "call back", meaning: "gọi lại điện thoại", example: "I will call you back in ten minutes.", translation: "Tớ sẽ gọi lại cho ní sau 10 phút nữa nhé.", image: "https://images.unsplash.com/photo-1523966211575-eb4a01e7dd51?w=500" },
-            { id: 35, day: 9, phrase: "call down", meaning: "mắng nhiếc, khiển trách", example: "The manager called him down for the mistake.", translation: "Quản lý đã mắng anh ta một trận lôi đình vì sai sót.", image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=500" },
-            { id: 36, day: 9, phrase: "call for", meaning: "gọi mời ai, đòi hỏi cần", example: "This project calls for immediate action.", translation: "Dự án này đòi hỏi phải bắt tay vào làm ngay.", image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=500" },
-
-            // Fill more default placeholder days for full demo flow so they map dynamically to all 30 days
+            { id: 16, day: 4, phrase: "beaver away", meaning: "làm việc cực kỳ chăm chỉ", example: "She's been beavering away at her desk.", translation: "Mom ấy đã làm việc cắm đầu cắm cổ suốt.", image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=500" }
         ];
 
-        // Autogenerating remaining list mock for seamless 30-day experience
+        // Seed words dynamically into remaining days so there are no empty days
         const wordPool = [
             { phrase: "call off", meaning: "hủy bỏ", example: "They decided to call off the meeting.", translation: "Họ đã quyết định hủy bỏ cuộc họp." },
-            { phrase: "call up", meaning: "gọi điện thoại, gọi đi lính", example: "He was called up for military service.", translation: "Anh ấy bị gọi đi nghĩa vụ quân sự." },
+            { phrase: "call up", meaning: "gọi điện thoại", example: "He was called up for service.", translation: "Anh ấy bị gọi đi nghĩa vụ quân sự." },
             { phrase: "carry on", meaning: "tiếp tục hành động", example: "Carry on with your work, please.", translation: "Cứ tiếp tục làm việc của ní đi nhé." },
-            { phrase: "check in", meaning: "làm thủ tục nhận phòng/vé", example: "We need to check in at 2 PM.", translation: "Chúng ta cần check-in lúc 2 giờ chiều." },
-            { phrase: "come across", meaning: "tình cờ gặp", example: "I came across an old photo of my wife.", translation: "Tớ vô tình lượm được bức ảnh cũ của vợ." },
+            { phrase: "check in", meaning: "làm thủ tục", example: "We need to check in at 2 PM.", translation: "Chúng ta cần check-in lúc 2 giờ chiều." },
+            { phrase: "come across", meaning: "tình cờ gặp", example: "I came across an old photo.", translation: "Tớ vô tình lượm được bức ảnh cũ." },
             { phrase: "come up with", meaning: "nảy ra ý tưởng mới", example: "She came up with a brilliant plan.", translation: "Mom ấy nảy ra một kế hoạch đỉnh chóp." },
             { phrase: "count on", meaning: "tin cậy vào", example: "Ní can count on me anytime!", translation: "Ní hoàn toàn có thể tin tưởng tớ mọi lúc!" },
-            { phrase: "do away with", meaning: "vứt bỏ, bãi bỏ", example: "We should do away with these old rules.", translation: "Chúng ta nên loại bỏ những luật lệ cũ kĩ này đi." },
             { phrase: "doze off", meaning: "ngủ gật", example: "He dozed off during the lecture.", translation: "Cậu ta ngủ gật ngon lành ngay giữa giờ học." },
-            { phrase: "drop by", meaning: "ghé thăm bất ngờ", example: "Feel free to drop by my house.", translation: "Ní cứ tự nhiên ghé qua nhà tớ chơi nhé." },
+            { phrase: "drop by", meaning: "ghé thăm", example: "Feel free to drop by my house.", translation: "Ní cứ tự nhiên ghé qua nhà tớ chơi nhé." },
             { phrase: "eat out", meaning: "đi ăn tiệm", example: "We usually eat out on Saturdays.", translation: "Nhà tớ hay rủ nhau đi ăn ngoài vào thứ Bảy." },
-            { phrase: "figure out", meaning: "hiểu ra, giải quyết được", example: "Can ní help me figure out this puzzle?", translation: "Ní giúp tớ giải quyết câu đố hóc búa này với?" },
-            { phrase: "fill out", meaning: "điền vào mẫu đơn", example: "Please fill out this form.", translation: "Ní vui lòng điền đầy đủ thông tin vào mẫu này nha." },
-            { phrase: "get along", meaning: "hòa thuận vui vẻ", example: "I get along very well with my wife.", translation: "Tớ và vợ sống cực kỳ hòa thuận luôn." },
+            { phrase: "figure out", meaning: "hiểu ra, giải quyết", example: "Can ní help me figure out this puzzle?", translation: "Ní giúp tớ giải quyết câu đố này với?" },
             { phrase: "give up", meaning: "từ bỏ", example: "Never give up on your dreams, mom!", translation: "Đừng bao giờ từ bỏ ước mơ của mình nhé mom!" },
             { phrase: "look after", meaning: "chăm sóc", example: "Who will look after the kids?", translation: "Ai sẽ chăm sóc mấy đứa nhỏ đây ní?" },
-            { phrase: "run out of", meaning: "hết sạch thứ gì", example: "We have run out of coffee.", translation: "Nhà hết sạch cà phê rồi ní ơi, cứu!" },
-            { phrase: "work out", meaning: "tập thể dục, giải quyết việc", example: "Everything will work out fine.", translation: "Mọi việc rồi sẽ ổn thỏa cả thôi mom." }
+            { phrase: "run out of", meaning: "hết sạch", example: "We have run out of coffee.", translation: "Nhà hết sạch cà phê rồi ní ơi, cứu!" },
+            { phrase: "work out", meaning: "tập thể dục, giải quyết", example: "Everything will work out fine.", translation: "Mọi việc rồi sẽ ổn thỏa cả thôi mom." }
         ];
 
-        // Seed words dynamically into 30 days if not fully populated
-        for (let d = 10; d <= 30; d++) {
+        for (let d = 5; d <= 30; d++) {
             for (let i = 0; i < 4; i++) {
                 const baseWord = wordPool[(d * 3 + i) % wordPool.length];
                 phrasalVerbsData.push({
@@ -397,27 +399,143 @@
                     meaning: baseWord.meaning,
                     example: baseWord.example,
                     translation: baseWord.translation,
-                    image: `https://images.unsplash.com/photo-${1500000000000 + (d * 50000) + (i * 10000)}?w=500&auto=format&fit=crop&q=60`
+                    image: `https://images.unsplash.com/photo-${1500000000000 + (d * 50000) + (i * 10000)}?w=500`
                 });
             }
         }
 
-        // App States
+        // Authentication & State Variables
+        let authTab = 'login';
+        let currentUser = null;
+        let completedDays = [];
+        let srsData = {};
         let currentDay = 1;
         let currentCardIndex = 0;
-        let srsQueue = [];
-        let completedDays = JSON.parse(localStorage.getItem('completed_days')) || [];
-        let srsData = JSON.parse(localStorage.getItem('srs_data')) || {};
 
-        // DOM Initializations on Load
-        window.addEventListener('DOMContentLoaded', () => {
+        function toggleAuthTab(tab) {
+            authTab = tab;
+            const loginBtn = document.getElementById('tab-login-btn');
+            const registerBtn = document.getElementById('tab-register-btn');
+            const submitBtn = document.getElementById('auth-submit-btn');
+
+            if (tab === 'login') {
+                loginBtn.className = "flex-1 py-2.5 rounded-xl font-bold text-xs transition bg-white text-dark shadow-sm";
+                registerBtn.className = "flex-1 py-2.5 rounded-xl font-bold text-xs transition text-slate-400";
+                submitBtn.innerText = "Đăng Nhập Ngay Ní Ơi! 🚀";
+            } else {
+                loginBtn.className = "flex-1 py-2.5 rounded-xl font-bold text-xs transition text-slate-400";
+                registerBtn.className = "flex-1 py-2.5 rounded-xl font-bold text-xs transition bg-white text-dark shadow-sm";
+                submitBtn.innerText = "Đăng Ký Tài Khoản Mới! 🦄";
+            }
+        }
+
+        function submitAuth() {
+            const usernameInput = document.getElementById('auth-username').value.trim();
+            const passwordInput = document.getElementById('auth-password').value.trim();
+
+            if (!usernameInput || !passwordInput) {
+                showToast("Vui lòng điền đủ tên đăng nhập và mật khẩu nhé mom!", "warning");
+                return;
+            }
+
+            let usersDb = JSON.parse(localStorage.getItem('phrasal_users_db')) || {};
+
+            if (authTab === 'register') {
+                // Sign Up Logic
+                if (usersDb[usernameInput]) {
+                    showToast("Tên đăng nhập này bị trùng rồi ní ơi, chọn tên khác đê!", "danger");
+                    return;
+                }
+                if (passwordInput.length < 4) {
+                    showToast("Mật khẩu phải dài hơn 4 ký tự nha ní!", "warning");
+                    return;
+                }
+
+                // Create new user profile with empty templates
+                usersDb[usernameInput] = {
+                    password: passwordInput,
+                    completedDays: [],
+                    srsData: {}
+                };
+
+                localStorage.setItem('phrasal_users_db', JSON.stringify(usersDb));
+                showToast("Đăng ký thành công rực rỡ! Đăng nhập thôi ní!", "success");
+                toggleAuthTab('login');
+            } else {
+                // Log In Logic
+                const user = usersDb[usernameInput];
+                if (!user || user.password !== passwordInput) {
+                    showToast("Tên đăng nhập hoặc mật khẩu sai bét rồi mom ơi! ❌", "danger");
+                    return;
+                }
+
+                // Successful login
+                currentUser = usernameInput;
+                localStorage.setItem('phrasal_current_user', currentUser);
+                
+                // Load this user's dataset
+                completedDays = user.completedDays || [];
+                srsData = user.srsData || {};
+
+                loginSuccess();
+            }
+        }
+
+        function loginSuccess() {
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('app-container').classList.remove('hidden');
+            document.getElementById('current-user-display').innerText = currentUser;
+
+            // Clear input fields
+            document.getElementById('auth-username').value = '';
+            document.getElementById('auth-password').value = '';
+
+            // Initialize app
             renderRoadmap();
             updateGlobalProgress();
             loadDayFlashcards(1);
             setupDictionary();
+            
+            showToast(`Chào mừng ní ${currentUser} quay lại chiến đấu! 🔥`, "success");
+        }
+
+        function logoutUser() {
+            currentUser = null;
+            localStorage.removeItem('phrasal_current_user');
+            completedDays = [];
+            srsData = {};
+
+            document.getElementById('app-container').classList.add('hidden');
+            document.getElementById('auth-screen').classList.remove('hidden');
+            showToast("Hẹn gặp lại ní yêu sớm nhé! 👋", "info");
+        }
+
+        // Auto-login if session exists
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedSession = localStorage.getItem('phrasal_current_user');
+            if (savedSession) {
+                let usersDb = JSON.parse(localStorage.getItem('phrasal_users_db')) || {};
+                const user = usersDb[savedSession];
+                if (user) {
+                    currentUser = savedSession;
+                    completedDays = user.completedDays || [];
+                    srsData = user.srsData || {};
+                    loginSuccess();
+                }
+            }
         });
 
-        // 1. RENDERING THE NEW ROADMAP GRID
+        // Save progress explicitly for the active logged-in user profile
+        function saveUserProgress() {
+            if (!currentUser) return;
+            let usersDb = JSON.parse(localStorage.getItem('phrasal_users_db')) || {};
+            if (usersDb[currentUser]) {
+                usersDb[currentUser].completedDays = completedDays;
+                usersDb[currentUser].srsData = srsData;
+                localStorage.setItem('phrasal_users_db', JSON.stringify(usersDb));
+            }
+        }
+
         function renderRoadmap() {
             const grid = document.getElementById('roadmap-grid');
             grid.innerHTML = '';
@@ -425,11 +543,8 @@
             for (let day = 1; day <= 30; day++) {
                 const dayWords = phrasalVerbsData.filter(v => v.day === day);
                 const isCompleted = completedDays.includes(day);
-                
-                // Active day has highlighted styles
                 const isActive = (day === currentDay);
                 
-                // Calculate custom border color wrapper
                 let borderClass = 'border-slate-200';
                 let bgClass = 'bg-white text-slate-700';
                 if (isCompleted) {
@@ -464,7 +579,6 @@
             showToast(`Vào học Ngày ${day} thôi ní ơi! 🎉`, 'success');
         }
 
-        // 2. FLASHCARDS SYSTEM
         function loadDayFlashcards(day) {
             const dayWords = phrasalVerbsData.filter(v => v.day === day);
             currentCardIndex = 0;
@@ -473,7 +587,6 @@
 
         function updateFlashcardView(deck) {
             const container = document.getElementById('flashcard-container');
-            // reset card flip state to face front when loading new
             container.classList.remove('rotate-y-180');
 
             if (!deck || deck.length === 0) {
@@ -490,11 +603,9 @@
             document.getElementById('card-translation').innerText = `👉 ${currentItem.translation}`;
             document.getElementById('card-index').innerText = `Thẻ ${currentCardIndex + 1}/${deck.length}`;
 
-            // Image Handler
             const frontImg = document.getElementById('card-front-img');
             frontImg.src = currentItem.image || 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=500';
 
-            // Click listener to toggle flip
             container.onclick = () => {
                 container.classList.toggle('rotate-y-180');
             };
@@ -523,7 +634,7 @@
         function markDayCompleted() {
             if (!completedDays.includes(currentDay)) {
                 completedDays.push(currentDay);
-                localStorage.setItem('completed_days', JSON.stringify(completedDays));
+                saveUserProgress(); // save straight into account session
                 renderRoadmap();
                 updateGlobalProgress();
                 showToast(`Ní đỉnh quá xá! Hoàn thành Ngày ${currentDay} rồi nhé! 🔥`, "success");
@@ -532,9 +643,8 @@
             }
         }
 
-        // Speak words using Web Speech API TTS
         function speakCurrentWord(event) {
-            event.stopPropagation(); // prevent card flipping when clicking speaker
+            event.stopPropagation();
             const dayWords = phrasalVerbsData.filter(v => v.day === currentDay);
             const currentItem = dayWords[currentCardIndex];
             if ('speechSynthesis' in window) {
@@ -547,17 +657,15 @@
             }
         }
 
-        // 3. SPACED REPETITION (SRS - SM2 ALGORITHM)
         function rateSRS(rating) {
             const dayWords = phrasalVerbsData.filter(v => v.day === currentDay);
             const word = dayWords[currentCardIndex];
             
-            // SM2 Calculation
-            let interval = 1; // days
-            if (rating === 4) interval = 4; // Easy
-            else if (rating === 3) interval = 2; // Good
-            else if (rating === 2) interval = 1; // Hard
-            else interval = 0; // Again (review today)
+            let interval = 1;
+            if (rating === 4) interval = 4;
+            else if (rating === 3) interval = 2;
+            else if (rating === 2) interval = 1;
+            else interval = 0;
 
             const nextReviewDate = new Date();
             nextReviewDate.setDate(nextReviewDate.getDate() + interval);
@@ -570,19 +678,118 @@
                 rating: rating
             };
 
-            localStorage.setItem('srs_data', JSON.stringify(srsData));
+            saveUserProgress(); // persist user statistics
             showToast("Đã lưu lịch ôn tập cho ní rồi nha! 👍", "success");
             nextCard();
         }
 
-        // 4. TAB NAVIGATION
+        function startQuizGame() {
+            const arena = document.getElementById('game-arena');
+            arena.classList.remove('hidden');
+            arena.innerHTML = '';
+
+            const correctWord = phrasalVerbsData[Math.floor(Math.random() * phrasalVerbsData.length)];
+            const options = [correctWord.meaning];
+            
+            while (options.length < 4) {
+                const randWord = phrasalVerbsData[Math.floor(Math.random() * phrasalVerbsData.length)];
+                if (!options.includes(randWord.meaning)) {
+                    options.push(randWord.meaning);
+                }
+            }
+            options.sort(() => Math.random() - 0.5);
+
+            arena.innerHTML = `
+                <div class="text-center space-y-4">
+                    <span class="text-xs font-bold text-indigo-500 uppercase tracking-widest">Đố Ní Nghĩa Đúng Của:</span>
+                    <h3 class="text-2xl md:text-3xl font-extrabold text-dark tracking-tight">${correctWord.phrase}</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-6">
+                        ${options.map(opt => `
+                            <button onclick="checkQuizAnswer('${opt}', '${correctWord.meaning}')" class="p-4 rounded-2xl border border-slate-200 text-sm font-semibold hover:bg-indigo-50 hover:border-indigo-200 active:scale-95 transition text-slate-700 text-left">
+                                ${opt}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function checkQuizAnswer(selected, correct) {
+            if (selected === correct) {
+                showToast("Quá đỉnh mom ơi! Chuẩn không cần chỉnh 🎉", "success");
+                setTimeout(startQuizGame, 1000);
+            } else {
+                showToast("Uầy sai rồi ní ơi, chọn lại đê! ❌", "danger");
+            }
+        }
+
+        function startScrambleGame() {
+            const arena = document.getElementById('game-arena');
+            arena.classList.remove('hidden');
+            arena.innerHTML = '';
+
+            const wordObj = phrasalVerbsData[Math.floor(Math.random() * phrasalVerbsData.length)];
+            const correctPhrase = wordObj.phrase;
+            const parts = correctPhrase.split(' ');
+
+            if (parts.length < 2) {
+                startQuizGame();
+                return;
+            }
+            const scrambled = [...parts].sort(() => Math.random() - 0.5);
+
+            arena.innerHTML = `
+                <div class="text-center space-y-4">
+                    <span class="text-xs font-bold text-pink-500 uppercase tracking-widest">Xếp từ thành cụm đúng nghĩa:</span>
+                    <h3 class="text-lg font-bold text-dark mt-1">"${wordObj.meaning}"</h3>
+                    <div class="flex flex-wrap gap-3 justify-center py-4" id="scramble-bank">
+                        ${scrambled.map(word => `
+                            <button onclick="appendScramble(this)" class="px-4 py-2.5 bg-slate-100 border border-slate-200 rounded-xl font-semibold hover:bg-indigo-50 active:scale-95 transition text-slate-700">
+                                ${word}
+                            </button>
+                        `).join('')}
+                    </div>
+                    <div class="p-4 bg-slate-50 border border-dashed border-slate-200 rounded-2xl min-h-[50px] flex gap-2 justify-center items-center" id="scramble-answer"></div>
+                    <div class="flex gap-2 justify-center mt-6">
+                        <button onclick="checkScrambleAnswer('${correctPhrase}')" class="px-5 py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-sm shadow-md active:scale-95 transition">Kiểm Tra</button>
+                        <button onclick="startScrambleGame()" class="px-5 py-2.5 bg-slate-200 text-slate-700 font-bold rounded-xl text-sm active:scale-95 transition">Đổi Từ</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function appendScramble(btn) {
+            const answerContainer = document.getElementById('scramble-answer');
+            const word = btn.innerText;
+            
+            const target = document.createElement('button');
+            target.className = "px-4 py-2.5 bg-indigo-600 text-white rounded-xl font-bold shadow-sm active:scale-95 transition";
+            target.innerText = word;
+            target.onclick = () => {
+                target.remove();
+                btn.classList.remove('opacity-40', 'pointer-events-none');
+            };
+
+            answerContainer.appendChild(target);
+            btn.classList.add('opacity-40', 'pointer-events-none');
+        }
+
+        function checkScrambleAnswer(correct) {
+            const answerDivs = document.getElementById('scramble-answer').children;
+            const assembled = Array.from(answerDivs).map(el => el.innerText).join(' ');
+
+            if (assembled === correct) {
+                showToast("Ghép từ mượt mà luôn ní ơi! Hết nước chấm! 🔥", "success");
+                setTimeout(startScrambleGame, 1000);
+            } else {
+                showToast("Hình như chưa khớp rồi mom, xếp lại xem nhé! 😵‍💫", "danger");
+            }
+        }
+
         function switchTab(tabId) {
-            // Hide all
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            // Show selected
             document.getElementById(`tab-${tabId}`).classList.remove('hidden');
 
-            // Update Navigation active states desktop
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.classList.remove('bg-primary/10', 'text-primary');
                 btn.classList.add('text-slate-500', 'hover:bg-slate-50');
@@ -593,7 +800,6 @@
                 activeBtn.classList.add('bg-primary/10', 'text-primary');
             }
 
-            // Update Navigation active states mobile
             document.querySelectorAll('.mob-nav-btn').forEach(btn => {
                 btn.classList.remove('text-primary');
                 btn.classList.add('text-slate-400');
@@ -605,7 +811,6 @@
             }
         }
 
-        // 5. THE TOAST ENGINE (Replacing ugly browser alerts)
         function showToast(message, type = 'info') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -623,31 +828,27 @@
 
             container.appendChild(toast);
             
-            // Trigger animation in
             setTimeout(() => {
                 toast.classList.remove('translate-y-2', 'opacity-0');
             }, 10);
 
-            // Out and destroy after 3s
             setTimeout(() => {
                 toast.classList.add('translate-y-2', 'opacity-0');
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
         }
 
-        // Helper: Global Progress Calculation
         function updateGlobalProgress() {
             const percent = Math.round((completedDays.length / 30) * 100);
             document.getElementById('global-progress-percent').innerText = `${percent}%`;
             
             const circle = document.getElementById('global-progress-circle');
             const radius = 13;
-            const circumference = 2 * Math.PI * radius; // ~81.68
+            const circumference = 2 * Math.PI * radius;
             const offset = circumference - (percent / 100) * circumference;
             circle.style.strokeDashoffset = offset;
         }
 
-        // 6. SỔ TAY TRA CỨU DICTIONARY SYSTEM
         function setupDictionary() {
             const list = document.getElementById('dictionary-list');
             list.innerHTML = '';
@@ -684,120 +885,6 @@
                     card.classList.add('hidden');
                 }
             });
-        }
-
-        // --- MINI GAMES SECTION ---
-        function startQuizGame() {
-            const arena = document.getElementById('game-arena');
-            arena.classList.remove('hidden');
-            arena.innerHTML = '';
-
-            // Pick a random question
-            const correctWord = phrasalVerbsData[Math.floor(Math.random() * phrasalVerbsData.length)];
-            
-            // Build options
-            const options = [correctWord.meaning];
-            while (options.length < 4) {
-                const randWord = phrasalVerbsData[Math.floor(Math.random() * phrasalVerbsData.length)];
-                if (!options.includes(randWord.meaning)) {
-                    options.push(randWord.meaning);
-                }
-            }
-            // Shuffle options
-            options.sort(() => Math.random() - 0.5);
-
-            arena.innerHTML = `
-                <div class="text-center space-y-4">
-                    <span class="text-xs font-bold text-indigo-500 uppercase tracking-widest">Đố Ní Nghĩa Đúng Của:</span>
-                    <h3 class="text-2xl md:text-3xl font-extrabold text-dark tracking-tight">${correctWord.phrase}</h3>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-6">
-                        ${options.map(opt => `
-                            <button onclick="checkQuizAnswer('${opt}', '${correctWord.meaning}')" class="p-4 rounded-2xl border border-slate-200 text-sm font-semibold hover:bg-indigo-50 hover:border-indigo-200 active:scale-95 transition text-slate-700 text-left">
-                                ${opt}
-                            </button>
-                        `).join('')}
-                    </div>
-                </div>
-            `;
-        }
-
-        function checkQuizAnswer(selected, correct) {
-            if (selected === correct) {
-                showToast("Quá đỉnh mom ơi! Chuẩn không cần chỉnh 🎉", "success");
-                setTimeout(startQuizGame, 1000);
-            } else {
-                showToast("Uầy sai rồi ní ơi, chọn lại đê! ❌", "danger");
-            }
-        }
-
-        function startScrambleGame() {
-            const arena = document.getElementById('game-arena');
-            arena.classList.remove('hidden');
-            arena.innerHTML = '';
-
-            const wordObj = phrasalVerbsData[Math.floor(Math.random() * phrasalVerbsData.length)];
-            const correctPhrase = wordObj.phrase;
-            
-            // Scramble parts
-            const parts = correctPhrase.split(' ');
-            if (parts.length < 2) {
-                // fall back to quiz if not multiple words
-                startQuizGame();
-                return;
-            }
-            const scrambled = [...parts].sort(() => Math.random() - 0.5);
-
-            arena.innerHTML = `
-                <div class="text-center space-y-4">
-                    <span class="text-xs font-bold text-pink-500 uppercase tracking-widest">Xếp từ thành cụm đúng nghĩa:</span>
-                    <h3 class="text-lg font-bold text-dark mt-1">"${wordObj.meaning}"</h3>
-                    
-                    <div class="flex flex-wrap gap-3 justify-center py-4" id="scramble-bank">
-                        ${scrambled.map(word => `
-                            <button onclick="appendScramble(this)" class="px-4 py-2.5 bg-slate-100 border border-slate-200 rounded-xl font-semibold hover:bg-indigo-50 active:scale-95 transition text-slate-700">
-                                ${word}
-                            </button>
-                        `).join('')}
-                    </div>
-
-                    <div class="p-4 bg-slate-50 border border-dashed border-slate-200 rounded-2xl min-h-[50px] flex gap-2 justify-center items-center" id="scramble-answer"></div>
-
-                    <div class="flex gap-2 justify-center mt-6">
-                        <button onclick="checkScrambleAnswer('${correctPhrase}')" class="px-5 py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-sm shadow-md active:scale-95 transition">Kiểm Tra</button>
-                        <button onclick="startScrambleGame()" class="px-5 py-2.5 bg-slate-200 text-slate-700 font-bold rounded-xl text-sm active:scale-95 transition">Đổi Từ</button>
-                    </div>
-                </div>
-            `;
-        }
-
-        function appendScramble(btn) {
-            const answerContainer = document.getElementById('scramble-answer');
-            const word = btn.innerText;
-            
-            // Create target button in active answer zone
-            const target = document.createElement('button');
-            target.className = "px-4 py-2.5 bg-indigo-600 text-white rounded-xl font-bold shadow-sm active:scale-95 transition";
-            target.innerText = word;
-            target.onclick = () => {
-                target.remove();
-                btn.classList.remove('opacity-40', 'pointer-events-none');
-            };
-
-            answerContainer.appendChild(target);
-            btn.classList.add('opacity-40', 'pointer-events-none');
-        }
-
-        function checkScrambleAnswer(correct) {
-            const answerDivs = document.getElementById('scramble-answer').children;
-            const assembled = Array.from(answerDivs).map(el => el.innerText).join(' ');
-
-            if (assembled === correct) {
-                showToast("Ghép từ mượt mà luôn ní ơi! Hết nước chấm! 🔥", "success");
-                setTimeout(startScrambleGame, 1000);
-            } else {
-                showToast("Hình như chưa khớp rồi mom, xếp lại xem nhé! 😵‍💫", "danger");
-            }
         }
     </script>
 </body>
